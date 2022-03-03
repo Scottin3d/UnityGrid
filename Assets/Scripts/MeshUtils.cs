@@ -307,15 +307,25 @@ namespace Utils {
             Vector3[] vertices = mesh.vertices;
             Vector3[] normals = mesh.normals;
             int[] triangles = mesh.triangles;
-            for (int i = 0; i < vertices.Length; i++) {
+            for (int i = 0; i < triangles.Length / 3; i+=2) {
                 Vector3 p0 = vertices[triangles[i * 3 + 0]];
                 Vector3 p1 = vertices[triangles[i * 3 + 1]];
                 Vector3 p2 = vertices[triangles[i * 3 + 2]];
-                Vector3 p0N = normals[triangles[i * 3 + 0]];
-                Vector3 p1N = normals[triangles[i * 3 + 1]];
-                Vector3 p2N = normals[triangles[i * 3 + 2]];
-                Vector3 pNorm = (Vector3.Cross(p1 - p0, p2 - p0)).normalized;
-                Vector3 pMid = (p0 + p1 + p2) / 3;
+                Vector3 pNorm1 = (Vector3.Cross(p1 - p0, p2 - p0)).normalized;
+                Vector3 pMid1 = (p0 + p1 + p2) / 3;
+
+                Vector3 p3 = vertices[triangles[i * 3 + 3]];
+                Vector3 p4 = vertices[triangles[i * 3 + 4]];
+                Vector3 p5 = vertices[triangles[i * 3 + 5]];
+                Vector3 pNorm2 = (Vector3.Cross(p4 - p3, p5 - p3)).normalized;
+                Vector3 pMid2 = (p3 + p4 + p5) / 3;
+
+                Vector3 pNorm = (pNorm1 + pNorm2) / 2;
+                Vector3 pMid = (pMid1 + pMid2) / 2;
+
+                float slope = Vector3.Angle(pNorm, Vector3.up);
+                TextMesh text = CodeMonkey.Utils.UtilsClass.CreateWorldText(slope.ToString(), null, pMid, 20, Color.white,TextAnchor.MiddleCenter,TextAlignment.Center);
+                text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                 Debug.DrawLine(p0, p1, Color.white,1000f);  // These draw the sides
                 Debug.DrawLine(p1, p2, Color.white, 1000f);
                 Debug.DrawLine(p2, p0, Color.white, 1000f);
@@ -324,6 +334,26 @@ namespace Utils {
             }
             
         }
+
+        /// <summary>
+        /// Get the slope of the triangle surface compared to <c>Vector3.up</c>.
+        /// </summary>
+        /// <param name="surfaceNormal">The surface normal (<c>Vector3</c>)</param>
+        /// <returns>The angle between the surface normal.</returns>
+        public static float SurfaceSlope(Vector3 surfaceNormal) {
+            return Vector3.Angle(surfaceNormal, Vector3.up);
+        }
+
+        /// <summary>
+        /// Get the slope of the triangle surface.
+        /// </summary>
+        /// <param name="surfaceNormal">The surface normal (<c>Vector3</c>)</param>
+        /// <returns>The angle between the surface normal.</returns>
+        public static float SurfaceSlope(Vector3 surfaceNormal, Vector3 compareTo ) {
+            return Vector3.Angle(surfaceNormal, compareTo);
+        }
+
+
     }
 
     /// <summary>

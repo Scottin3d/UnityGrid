@@ -10,11 +10,20 @@ public class TerrainGrid : MonoBehaviour {
     public int gridHeight = 10;
     public float gridCellSize;
 
+    [Header("Layer Materials")]
+    public Material[] gridLayerMaterials;
+    public GridLayer[] gridLayers;
+
     public Material gridMaterial;
+    public Material buildableGridLayer;
     private TerrainGridTile[,] terrainGridTiles;
     public Terrain terrain;
+    private Mesh terrainMesh;
+    GameObject gridObject;
 
     public Texture2D colorTex;
+    public Texture2D buildableColorTex;
+    public Texture2D BRGBWStrip;
     // Start is called before the first frame update
     void Start() {
         //GenerateTerrainGrid();
@@ -24,6 +33,10 @@ public class TerrainGrid : MonoBehaviour {
         colorTex.filterMode = FilterMode.Point;
         InitColorMap();
         //CreateTerrainMesh();
+
+        //InitBuildSlopeColorMap();
+        InitGridLayerBuildable();
+        gridObject.GetComponent<MeshRenderer>().material = gridLayerMaterials[0];
     }
 
     private void Update() {
@@ -31,8 +44,62 @@ public class TerrainGrid : MonoBehaviour {
             ColorMap();
         }
 
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            gridObject.GetComponent<MeshRenderer>().material = gridLayerMaterials[0];
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2)) { 
+            gridObject.GetComponent<MeshRenderer>().material = gridLayerMaterials[1];
+        }
+
     }
 
+    private void InitGridLayerBuildable() {
+        GridLayerBuildable layer = new GridLayerBuildable(15f, terrainMesh, gridLayerMaterials[1], gridWidth, gridHeight, FilterMode.Point);
+        layer.InitLayer();
+        gridLayerMaterials[1] = layer.GridLayerMaterial;
+    }
+    private void InitBuildSlopeColorMap() {
+        buildableColorTex = new Texture2D(gridWidth, gridHeight);
+        buildableColorTex.filterMode = FilterMode.Bilinear;
+
+        Vector3[] vertices = terrainMesh.vertices;
+        Vector3[] normals = terrainMesh.normals;
+        int[] triangles = terrainMesh.triangles;
+
+        float[] slopes = new float[triangles.Length / 3];
+        Color[] colors = new Color[gridWidth * gridHeight * 2];
+
+        for (int i = 0; i < slopes.Length; i++) {
+            Vector3 p0 = vertices[triangles[i * 3 + 0]];
+            Vector3 p1 = vertices[triangles[i * 3 + 1]];
+            Vector3 p2 = vertices[triangles[i * 3 + 2]];
+            Vector3 p0N = normals[triangles[i * 3 + 0]];
+            Vector3 p1N = normals[triangles[i * 3 + 1]];
+            Vector3 p2N = normals[triangles[i * 3 + 2]];
+            Vector3 pNorm = (Vector3.Cross(p1 - p0, p2 - p0)).normalized;
+            Vector3 pMid = (p0 + p1 + p2) / 3;
+
+            slopes[i] = Utils.MeshUtils.SurfaceSlope(pNorm);
+        }
+
+        Color[] colorCache = BRGBWStrip.GetPixels();
+
+        for (int i = 1, j =0; i < slopes.Length; i++, j++) {
+            float a = ((slopes[i - 1]) / 90) * 128;
+            float b = ((slopes[i]) / 90) * 128;
+            //Color colorA = colorCache[Mathf.FloorToInt(a)];
+
+            //Color colorB = colorCache[Mathf.FloorToInt(b)];
+            //Utils.ColorsUtils.BlendColors(colorA, colorB);
+            colors[j] = colorCache[Mathf.FloorToInt(128 - ((slopes[i - 1] + slopes[i]) / 2))];
+        }
+
+        buildableColorTex.SetPixels(colors, 0);
+        buildableColorTex.Apply();
+
+        buildableGridLayer.SetTexture("ColorMap", buildableColorTex);
+        buildableGridLayer.SetFloat("GridSize", gridWidth);
+    }
     private void InitColorMap() {
         for (int x = 0; x < colorTex.width; x++) {
             for (int z = 0; z < colorTex.height; z++) {
@@ -57,14 +124,16 @@ public class TerrainGrid : MonoBehaviour {
     }
 
     private void Generate() {
-        GameObject terrainMesh = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        terrainMesh.transform.SetParent(transform);
+        gridObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        gridObject.transform.SetParent(transform);
         int xSize = gridWidth = (int)terrain.terrainData.size.x;
         int ySize = gridHeight = (int)terrain.terrainData.size.z;
         Vector3[] vertices = new Vector3[(xSize + 1) * (ySize + 1)];
         Vector2[] uv = new Vector2[vertices.Length];
+
         // MeshFilter
-        MeshFilter meshFilter = terrainMesh.GetComponent<MeshFilter>();
+        MeshFilter meshFilter = gridObject.GetComponent<MeshFilter>();
+        terrainMesh = meshFilter.mesh;
 
         vertices = new Vector3[(xSize + 1) * (ySize + 1)];
         for (int i = 0, y = 0; y <= ySize; y++) {
@@ -75,8 +144,8 @@ public class TerrainGrid : MonoBehaviour {
                 uv[i] = new Vector2((float)x / xSize, (float)y / ySize);
             }
         }
-        meshFilter.mesh.vertices = vertices;
-        meshFilter.mesh.uv = uv;
+        terrainMesh.vertices = vertices;
+        terrainMesh.uv = uv;
 
         int[] triangles = new int[xSize * ySize * 6];
         for (int ti = 0, vi = 0, y = 0; y < ySize; y++, vi++) {
@@ -87,18 +156,19 @@ public class TerrainGrid : MonoBehaviour {
                 triangles[ti + 5] = vi + xSize + 2;
             }
         }
-        meshFilter.mesh.triangles = triangles;
-        meshFilter.mesh.RecalculateNormals();
+        terrainMesh.triangles = triangles;
+        terrainMesh.RecalculateNormals();
+
         // MeshRenderer
-        MeshRenderer meshRenderer = terrainMesh.GetComponent<MeshRenderer>();
+        MeshRenderer meshRenderer = gridObject.GetComponent<MeshRenderer>();
         meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         meshRenderer.material = gridMaterial;
         gridMaterial.SetFloat("GridSize", gridWidth);
 
         // Collider
-        MeshCollider meshCollider = terrainMesh.GetComponent<MeshCollider>();
-        meshCollider.sharedMesh = meshFilter.mesh;
-        Utils.MeshUtils.ShowSurfaceNormals(meshFilter.mesh);
+        MeshCollider meshCollider = gridObject.GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = terrainMesh;
+        Utils.MeshUtils.ShowSurfaceNormals(terrainMesh);
     }
 
     private void CreateTerrainMesh() {

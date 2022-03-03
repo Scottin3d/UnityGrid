@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utils {
-    public static class Colors {
-        public static Color CreateColorFrom255RGB(float r = 0f, float g = 0f, float b = 0f, float a = 1f) {
-            return new Color(r / 255f, g / 255f, b / 255f, Mathf.Clamp01(a));
-        }
-    }
 
     public static class Utils {
 

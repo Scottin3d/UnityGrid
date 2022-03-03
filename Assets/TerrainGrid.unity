@@ -251,8 +251,11 @@ MonoBehaviour:
   gridHeight: 25
   gridCellSize: 0
   gridMaterial: {fileID: 2100000, guid: c497ffe0d0bd6f1408b8560df3c1691f, type: 2}
+  buildableGridLayer: {fileID: 2100000, guid: ef02843a7fd919343b7a212e384631b9, type: 2}
   terrain: {fileID: 1952407790}
   colorTex: {fileID: 0}
+  buildableColorTex: {fileID: 0}
+  BRGBWStrip: {fileID: 2800000, guid: 6f4e12158b3aa244289aa39705a47e98, type: 3}
 --- !u!4 &1571224008
 Transform:
   m_ObjectHideFlags: 0
