@@ -212,7 +212,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1146823887}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 8.6}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -247,19 +247,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa65af16a31501148960624f557ee6fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridWidth: 25
-  gridHeight: 25
-  gridCellSize: 0
+  terrain: {fileID: 1952407790}
+  gridCellSize: 4
   gridLayerMaterials:
   - {fileID: 2100000, guid: c497ffe0d0bd6f1408b8560df3c1691f, type: 2}
   - {fileID: 2100000, guid: ef02843a7fd919343b7a212e384631b9, type: 2}
-  gridLayers: []
-  gridMaterial: {fileID: 2100000, guid: c497ffe0d0bd6f1408b8560df3c1691f, type: 2}
-  buildableGridLayer: {fileID: 2100000, guid: ef02843a7fd919343b7a212e384631b9, type: 2}
-  terrain: {fileID: 1952407790}
   colorTex: {fileID: 0}
   buildableColorTex: {fileID: 0}
-  BRGBWStrip: {fileID: 2800000, guid: 6f4e12158b3aa244289aa39705a47e98, type: 3}
 --- !u!4 &1571224008
 Transform:
   m_ObjectHideFlags: 0
@@ -268,7 +262,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1571224006}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -351,8 +345,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1706685627}
-  m_LocalRotation: {x: 0.48014337, y: 0.37856293, z: -0.24122971, w: 0.7536317}
-  m_LocalPosition: {x: 0.7558589, y: 12.779167, z: 1.1938328}
+  m_LocalRotation: {x: 0.572133, y: 0.28114176, z: -0.21768986, w: 0.7390767}
+  m_LocalPosition: {x: 8.967747, y: 37.63429, z: 5.344206}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

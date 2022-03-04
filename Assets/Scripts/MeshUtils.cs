@@ -325,6 +325,7 @@ namespace Utils {
 
                 float slope = Vector3.Angle(pNorm, Vector3.up);
                 TextMesh text = CodeMonkey.Utils.UtilsClass.CreateWorldText(slope.ToString(), null, pMid, 20, Color.white,TextAnchor.MiddleCenter,TextAlignment.Center);
+                text.name = i.ToString();
                 text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                 text.transform.SetParent(parent);
                 Debug.DrawLine(p0, p1, Color.white,1000f);  // These draw the sides
@@ -334,6 +335,34 @@ namespace Utils {
                 Debug.Log(pNorm);
             }
             
+        }
+
+        public static List<float> SurfaceSlope(Mesh mesh, Transform parent = null) {
+            Vector3[] vertices = mesh.vertices;
+            Vector3[] normals = mesh.normals;
+            int[] triangles = mesh.triangles;
+            List<float> s = new List<float>();
+            for (int i = 0; i < triangles.Length / 3; i += 2) {
+                Vector3 p0 = vertices[triangles[i * 3 + 0]];
+                Vector3 p1 = vertices[triangles[i * 3 + 1]];
+                Vector3 p2 = vertices[triangles[i * 3 + 2]];
+                Vector3 pNorm1 = (Vector3.Cross(p1 - p0, p2 - p0)).normalized;
+                Vector3 pMid1 = (p0 + p1 + p2) / 3;
+
+                Vector3 p3 = vertices[triangles[i * 3 + 3]];
+                Vector3 p4 = vertices[triangles[i * 3 + 4]];
+                Vector3 p5 = vertices[triangles[i * 3 + 5]];
+                Vector3 pNorm2 = (Vector3.Cross(p4 - p3, p5 - p3)).normalized;
+                Vector3 pMid2 = (p3 + p4 + p5) / 3;
+
+                Vector3 pNorm = (pNorm1 + pNorm2) / 2;
+                Vector3 pMid = (pMid1 + pMid2) / 2;
+
+                float slope = Vector3.Angle(pNorm, Vector3.up);
+                s.Add(slope);
+            }
+            return s;
+
         }
 
         /// <summary>

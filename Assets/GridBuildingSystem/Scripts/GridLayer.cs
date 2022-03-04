@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridLayer : MonoBehaviour
+public class GridLayer
 {
     protected Mesh meshLayer;
     public Material GridLayerMaterial => gridLayerMaterial;
@@ -12,12 +12,13 @@ public class GridLayer : MonoBehaviour
     protected FilterMode gridFilterMode;
     protected int gridWidth;
     protected int gridHeight;
-
-    public GridLayer(Mesh meshLayer = default, Material gridLayerMaterial = default, int gridWidth = default, int gridHeight = default, FilterMode gridFilterMode = FilterMode.Bilinear) {
+    protected float gridCellSize;
+    public GridLayer(Mesh meshLayer = default, Material gridLayerMaterial = default, int gridWidth = default, int gridHeight = default, float gridCellSize = 1,  FilterMode gridFilterMode = FilterMode.Bilinear) {
         this.meshLayer = meshLayer;
         this.gridLayerMaterial = gridLayerMaterial;
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
+        this.gridCellSize = gridCellSize;
         this.gridFilterMode = gridFilterMode;
         colorTex = new Texture2D(gridWidth, gridHeight);
         colorTex.filterMode = this.gridFilterMode;
@@ -42,9 +43,9 @@ public class GridLayerBuildable : GridLayer
 {
     private float buildThreshold;
     public GridLayerBuildable(float buildThreshold = 10f, Mesh meshLayer = default, Material gridLayerMaterial = default, 
-                              int gridWidth = default, int gridHeight = default, 
+                              int gridWidth = default, int gridHeight = default, float gridCellSize = 1,
                               FilterMode gridFilterMode = FilterMode.Bilinear) 
-        : base(meshLayer, gridLayerMaterial, gridWidth, gridHeight, gridFilterMode) {
+        : base(meshLayer, gridLayerMaterial, gridWidth, gridHeight, gridCellSize, gridFilterMode) {
 
         this.buildThreshold = buildThreshold;
     }
@@ -78,12 +79,14 @@ public class GridLayerBuildable : GridLayer
         
         int[,] grid = new int[gridWidth * 2, gridHeight * 2];
 
+        List<float> s = Utils.MeshUtils.SurfaceSlope(meshLayer);
+
         for (int i = 1, j = 0, x = 0, z = 0; i < colors.Length; i++, j++, z++) {
             if (z >= gridWidth) {
                 x++;
                 z = 0;
             }
-            if (x == 0 || z == 0 || z >= gridHeight - 1|| x >= gridWidth - 1) {
+            if (x == 0 || z == 0 || z >= gridHeight - 1 || x >= gridWidth - 1) {
               colors[j] = colorCache[126];
             } else {
                 float slope = (slopes[i - 1] + slopes[i]) / 2f;
@@ -95,7 +98,7 @@ public class GridLayerBuildable : GridLayer
         colorTex.Apply();
 
         gridLayerMaterial.SetTexture("ColorMap", colorTex);
-        gridLayerMaterial.SetFloat("GridSize", gridWidth);
+        //gridLayerMaterial.SetFloat("GridSize", gridWidth);
 
     }
 

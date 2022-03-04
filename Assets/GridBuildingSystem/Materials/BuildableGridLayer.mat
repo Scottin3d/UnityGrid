@@ -98,9 +98,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - GridSize: 10
+    - Alpha: 0.452
+    - GridSize: 240
     - Vector1_16f7c0f3ffd34634b2444a8069fcbb2b: 1
-    - Vector1_28e6325de6994c0d81bf2a47455396bf: 0.1
+    - Vector1_28e6325de6994c0d81bf2a47455396bf: 0.15
     - Vector1_d5a2c25f99f74ff1aea344befbf17afd: 1
     - _AlphaClip: 0
     - _Blend: 0
@@ -132,6 +133,7 @@ Material:
     - Color_1a4c73b083db47a9ad44ecc5abddbb18: {r: 0, g: 0, b: 0, a: 0}
     - Color_c6bdbaefa0d944a199e04072da3ccaa5: {r: 0.9622641, g: 0.03177289, b: 0.03177289, a: 0}
     - Color_e54c725e470442f0a0689c45ef120d2d: {r: 0, g: 0, b: 0, a: 0}
+    - GridColor: {r: 0.5, g: 0.5, b: 0.5, a: 0}
     - _BaseColor: {r: 1, g: 0, b: 0, a: 0.2}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
