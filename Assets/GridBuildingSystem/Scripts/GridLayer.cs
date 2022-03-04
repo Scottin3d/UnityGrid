@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridLayer
+public class GridLayer : MonoBehaviour
 {
     protected Mesh meshLayer;
     public Material GridLayerMaterial => gridLayerMaterial;
@@ -32,7 +32,10 @@ public class GridLayer
         colorTex.SetPixels(colors, 0);
         colorTex.Apply();
         gridLayerMaterial.SetTexture("ColorMap", colorTex);
+
     }
+
+    public virtual void SetColor() { }
 }
 
 public class GridLayerBuildable : GridLayer 
@@ -53,10 +56,12 @@ public class GridLayerBuildable : GridLayer
         Vector3[] normals = meshLayer.normals;
         int[] triangles = meshLayer.triangles;
 
-        float[] slopes = new float[triangles.Length / 3];
-        Color[] colors = new Color[gridWidth * gridHeight * 2];
+        float[] slopes = new float[gridWidth * gridHeight];
+        Color[] colors = new Color[gridWidth * gridHeight];
+        Color[] colorCache = BRGBWStrip.GetPixels();
 
-        for (int i = 0, j = 0; i < triangles.Length / 3; i += 2, j++) {
+        for (int i = 0, j = 0; j < slopes.Length; i +=2, j++) {
+
             Vector3 p0 = vertices[triangles[i * 3 + 0]];
             Vector3 p1 = vertices[triangles[i * 3 + 1]];
             Vector3 p2 = vertices[triangles[i * 3 + 2]];
@@ -70,19 +75,33 @@ public class GridLayerBuildable : GridLayer
             Vector3 pNorm = (pNorm1 + pNorm2) / 2;
             slopes[j] = Vector3.Angle(pNorm, Vector3.up);
         }
+        
+        int[,] grid = new int[gridWidth * 2, gridHeight * 2];
 
-        Color[] colorCache = BRGBWStrip.GetPixels();
-
-        for (int i = 1, j = 0; i < slopes.Length; i++, j++) {
-            float slope = (slopes[i - 1] + slopes[i]) / 2f;
-            Color c = (slope >= buildThreshold) ? colorCache[1] : colorCache[50];
-            colors[j] = c;
+        for (int i = 1, j = 0, x = 0, z = 0; i < colors.Length; i++, j++, z++) {
+            if (z >= gridWidth) {
+                x++;
+                z = 0;
+            }
+            if (x == 0 || z == 0 || z >= gridHeight - 1|| x >= gridWidth - 1) {
+              colors[j] = colorCache[126];
+            } else {
+                float slope = (slopes[i - 1] + slopes[i]) / 2f;
+                Color c = (slope >= buildThreshold) ? colorCache[1] : colorCache[50];
+                colors[j] = c;
+            }
         }
-
         colorTex.SetPixels(colors, 0);
         colorTex.Apply();
 
         gridLayerMaterial.SetTexture("ColorMap", colorTex);
         gridLayerMaterial.SetFloat("GridSize", gridWidth);
+
+    }
+
+    public void SetColor(int x, int y, Color c) {
+        colorTex.SetPixel(x, y, c);
+        colorTex.Apply();
+        gridLayerMaterial.SetTexture("ColorMap", colorTex);
     }
 }

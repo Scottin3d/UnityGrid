@@ -98,7 +98,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - GridSize: 25
+    - GridSize: 10
     - Vector1_16f7c0f3ffd34634b2444a8069fcbb2b: 1
     - Vector1_28e6325de6994c0d81bf2a47455396bf: 0.1
     - Vector1_d5a2c25f99f74ff1aea344befbf17afd: 1

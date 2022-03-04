@@ -303,7 +303,7 @@ namespace Utils {
             triangles[tIndex + 5] = vIndex2;
         }
 
-        public static void ShowSurfaceNormals(Mesh mesh) {
+        public static void ShowSurfaceNormals(Mesh mesh, Transform parent = null) {
             Vector3[] vertices = mesh.vertices;
             Vector3[] normals = mesh.normals;
             int[] triangles = mesh.triangles;
@@ -326,6 +326,7 @@ namespace Utils {
                 float slope = Vector3.Angle(pNorm, Vector3.up);
                 TextMesh text = CodeMonkey.Utils.UtilsClass.CreateWorldText(slope.ToString(), null, pMid, 20, Color.white,TextAnchor.MiddleCenter,TextAlignment.Center);
                 text.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                text.transform.SetParent(parent);
                 Debug.DrawLine(p0, p1, Color.white,1000f);  // These draw the sides
                 Debug.DrawLine(p1, p2, Color.white, 1000f);
                 Debug.DrawLine(p2, p0, Color.white, 1000f);

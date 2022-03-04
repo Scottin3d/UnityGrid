@@ -6,6 +6,48 @@ namespace Utils {
 
     public static class Utils {
 
+        public static List<List<int>> FindIslands(int[,] grid) {
+            List<List<int>> islandList = new List<List<int>>();
+            
+            int M = grid.GetLength(0);
+            int N = grid.GetLength(1);
+
+            int[] dirs = { 0, 1, 0, -1, 0 };
+            for (int i = 0; i < M; i++) {
+                for (int j = 0; j < N; j++) {
+                    if (grid[i, j] == 1) {
+                        List<int> l = new List<int>();
+                        dfs(ref l, grid, dirs, i, j, M, N);
+                        islandList.Add(l);
+                    }
+                }
+            }
+            return islandList;
+        }
+
+        private static int dfs(ref List<int> l, int[,] grid, int[] dirs, int i, int j, int M, int N) {
+            int area = 1;
+            grid[i, j] = 0;
+            for (int d = 1; d < 5; d++) {
+                int ni = i + dirs[d];
+                int nj = j + dirs[d - 1];
+                if (inside(ni, nj, M, N) && grid[ni, nj] == 1) {
+                    l.Add(ni + nj * M);
+                    dfs(ref l, grid, dirs, ni, nj, M, N);
+                }
+            }
+
+            return area;
+        }
+
+        private static bool inside(int i, int j, int M, int N) {
+            if (i < 0 || i >= M || j < 0 || j >= N) {
+                return false;
+            }
+
+            return true;
+        }
+
         // raycast - returns intersection point on a plane
         public static bool ScottCast(out Vector3 intersection, Vector3 linePoint, Vector3 lineNormal,
                                          Vector3 planeNormal, Vector3 planePoint) {
