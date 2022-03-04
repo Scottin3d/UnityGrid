@@ -10,6 +10,8 @@ public class TerrainGrid : MonoBehaviour {
     private GameObject gridObject;
     private Mesh terrainMesh;
     private MeshRenderer gridMeshRenderer;
+    private Vector3 gridOrigin;
+    public float gridOffset = 0.1f;
 
     private bool debug = false;
     private GameObject debugParent;
@@ -20,17 +22,28 @@ public class TerrainGrid : MonoBehaviour {
 
     [Header("Layer Materials")]
     public Material[] gridLayerMaterials;
-    public List<GridLayerBuildable> gridLayers;
+    public List<Grid.Layer> gridLayers;
 
 
     public Texture2D colorTex;
     public Texture2D buildableColorTex;
 
     void Start() {
-        gridCellSize = (gridCellSize < 1) ? 1 : gridCellSize;
-
-        gridLayers = new List<GridLayerBuildable>();
+        // validate and init values
+        ValidateInitialValues();
         Generate();
+        InitGridLayerBuildable();
+        InitGridLayer();
+
+        gridMeshRenderer.material = gridLayerMaterials[0];
+    }
+
+    private void ValidateInitialValues() {
+        gridCellSize = (gridCellSize < 1) ? 1 : gridCellSize;
+        gridOrigin = terrain.transform.position;
+        gridOrigin.y += gridOffset;
+        gridLayers = new List<Grid.Layer>();
+
     }
 
     private void Update() {
@@ -59,8 +72,14 @@ public class TerrainGrid : MonoBehaviour {
         Vector3 mousePosition = Vector3.zero;
         if (Physics.Raycast(ray, out RaycastHit raycastHit, 999f)) {
             mousePosition = raycastHit.point;
-            int x = Mathf.FloorToInt((mousePosition - Vector3.zero).x / 1f);
-            int z = Mathf.FloorToInt((mousePosition - Vector3.zero).z / 1f);
+            int totX = gridWidth * (int)gridCellSize;
+            int totZ = gridHeight * (int)gridCellSize;
+
+            float xPos = (mousePosition - Vector3.zero).x * gridCellSize;
+            float zPos = (mousePosition - Vector3.zero).z * gridCellSize;
+            int x = Mathf.FloorToInt(xPos);
+            int z = Mathf.FloorToInt(zPos);
+
             colorTex.SetPixel(z, x, Color.white);
             colorTex.Apply();
             gridLayerMaterials[0].SetTexture("ColorMap", colorTex);
@@ -71,6 +90,7 @@ public class TerrainGrid : MonoBehaviour {
     private void Generate() {
         gridObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
         gridObject.transform.SetParent(transform);
+        gridObject.transform.position = gridOrigin;
         int xSize = gridWidth = (int)(terrain.terrainData.size.x * gridCellSize);
         int ySize = gridHeight = (int)(terrain.terrainData.size.z * gridCellSize);
         Vector3[] vertices = new Vector3[(xSize + 1) * (ySize + 1)];
@@ -125,16 +145,25 @@ public class TerrainGrid : MonoBehaviour {
 
         colorTex = new Texture2D(gridWidth, gridHeight);
         colorTex.filterMode = FilterMode.Point;
-        InitGridLayerBuildable();
-        gridObject.GetComponent<MeshRenderer>().material = gridLayerMaterials[1];
+        
     }
 
     private void InitGridLayerBuildable() {
-        GridLayerBuildable layer = new GridLayerBuildable(15f, terrainMesh, gridLayerMaterials[1], gridWidth, gridHeight, gridCellSize, FilterMode.Point);
+        Grid.BuildableLayer layer = new Grid.BuildableLayer(15f, terrainMesh, gridLayerMaterials[1], gridWidth, gridHeight, gridCellSize, FilterMode.Point);
         gridLayers.Add(layer);
         layer.InitLayer();
-        gridLayerMaterials[1] = layer.GridLayerMaterial;
+        gridLayerMaterials[1] = layer.LayerMaterial;
         gridLayerMaterials[1].SetFloat("GridSize", gridWidth * gridCellSize);
+
+    }
+
+    private void InitGridLayer() { 
+        Grid.GridLayer layer = new Grid.GridLayer(terrainMesh, gridLayerMaterials[0], 
+                                                 gridWidth, gridHeight, gridCellSize, 
+                                                 FilterMode.Point);
+        gridLayers.Add(layer);
+        gridLayerMaterials[0] = layer.LayerMaterial;
+        gridLayerMaterials[0].SetFloat("GridSize", gridWidth * gridCellSize);
     }
 }
 

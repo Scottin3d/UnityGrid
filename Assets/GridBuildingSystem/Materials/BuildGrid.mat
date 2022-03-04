@@ -86,7 +86,7 @@ Material:
     m_Floats:
     - Float_Movement: 0
     - Float_Rotation: 0
-    - GridSize: 60
+    - GridSize: 240
     - Vector1_6d5a4d4b9e184e2f8a65ef0a1c1ea93d: 50
     - Vector1_82fb3f97d4104e2c834c7e2123ed35f1: 0.2
     - Vector1_Alpha: 0.5
