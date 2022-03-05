@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BuildableGridLayer
+  m_Name: ResourceGrid
   m_Shader: {fileID: -6465566751694194690, guid: b76c5dddae21fa24ba9b7966c5f242b5, type: 3}
   m_ShaderKeywords: _RECEIVE_SHADOWS_OFF
   m_LightmapFlags: 4

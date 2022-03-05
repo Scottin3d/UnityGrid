@@ -249,9 +249,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   terrain: {fileID: 1952407790}
   gridOffset: 0.1
-  gridCellSize: 4
+  gridCellSize: 2
   gridLayerMaterials:
   - {fileID: 2100000, guid: c497ffe0d0bd6f1408b8560df3c1691f, type: 2}
+  - {fileID: 2100000, guid: 2f3a180ad502a304bbd4c154d8686f5a, type: 2}
   - {fileID: 2100000, guid: ef02843a7fd919343b7a212e384631b9, type: 2}
   colorTex: {fileID: 0}
   buildableColorTex: {fileID: 0}

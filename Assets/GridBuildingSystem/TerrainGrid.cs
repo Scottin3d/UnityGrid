@@ -21,7 +21,7 @@ public class TerrainGrid : MonoBehaviour {
     public float gridCellSize;
 
     [Header("Layer Materials")]
-    public Material[] gridLayerMaterials;
+    public List<Material> gridLayerMaterials;
     public List<Grid.Layer> gridLayers;
 
 
@@ -32,8 +32,28 @@ public class TerrainGrid : MonoBehaviour {
         // validate and init values
         ValidateInitialValues();
         Generate();
+
+        Grid.GridLayer gLayer = new Grid.GridLayer(terrainMesh, gridLayerMaterials[0],
+                                                 gridWidth, gridHeight, gridCellSize,
+                                                 FilterMode.Point);
+        InitGridLayer(gLayer);
+
+        Grid.BuildableLayer bLayer = new Grid.BuildableLayer(15f, terrainMesh, gridLayerMaterials[1],
+                                                            gridWidth, gridHeight, gridCellSize,
+                                                            FilterMode.Point);
+        InitGridLayer(bLayer);
+
+        Grid.Resource rLayer = new Grid.Resource(terrainMesh, gridLayerMaterials[2],
+                                                gridWidth, gridHeight, gridCellSize,
+                                                FilterMode.Bilinear);
+        InitGridLayer(rLayer);
+
+
+        /*
         InitGridLayerBuildable();
         InitGridLayer();
+        InitResourceLayer();
+        */
 
         gridMeshRenderer.material = gridLayerMaterials[0];
     }
@@ -43,7 +63,6 @@ public class TerrainGrid : MonoBehaviour {
         gridOrigin = terrain.transform.position;
         gridOrigin.y += gridOffset;
         gridLayers = new List<Grid.Layer>();
-
     }
 
     private void Update() {
@@ -56,6 +75,11 @@ public class TerrainGrid : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.Alpha2)) {
             gridMeshRenderer.material = gridLayerMaterials[1];
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            gridMeshRenderer.material = gridLayerMaterials[2];
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha0)) {
@@ -131,8 +155,6 @@ public class TerrainGrid : MonoBehaviour {
         // MeshRenderer
         gridMeshRenderer = gridObject.GetComponent<MeshRenderer>();
         gridMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        gridMeshRenderer.material = gridLayerMaterials[0];
-        gridLayerMaterials[0].SetFloat("GridSize", gridWidth);
 
         // Collider
         MeshCollider meshCollider = gridObject.GetComponent<MeshCollider>();
@@ -148,22 +170,41 @@ public class TerrainGrid : MonoBehaviour {
         
     }
 
-    private void InitGridLayerBuildable() {
-        Grid.BuildableLayer layer = new Grid.BuildableLayer(15f, terrainMesh, gridLayerMaterials[1], gridWidth, gridHeight, gridCellSize, FilterMode.Point);
+    private void InitGridLayer(Grid.Layer layer) {
         gridLayers.Add(layer);
         layer.InitLayer();
-        gridLayerMaterials[1] = layer.LayerMaterial;
-        gridLayerMaterials[1].SetFloat("GridSize", gridWidth * gridCellSize);
+        layer.LayerMaterial.SetFloat("GridSize", gridWidth * gridCellSize);
+    }
+
+    private void InitGridLayer()
+    {
+        Grid.GridLayer layer = new Grid.GridLayer(terrainMesh, gridLayerMaterials[0],
+                                                 gridWidth, gridHeight, gridCellSize,
+                                                 FilterMode.Point);
+        gridLayers.Add(layer);
+        layer.InitLayer();
+        layer.LayerMaterial.SetFloat("GridSize", gridWidth * gridCellSize);
+    }
+
+    private void InitGridLayerBuildable() {
+        Grid.BuildableLayer layer = new Grid.BuildableLayer(15f, terrainMesh, gridLayerMaterials[1], 
+                                                            gridWidth, gridHeight, gridCellSize, 
+                                                            FilterMode.Point);
+        gridLayers.Add(layer);
+        layer.InitLayer();
+        layer.LayerMaterial.SetFloat("GridSize", gridWidth * gridCellSize);
 
     }
 
-    private void InitGridLayer() { 
-        Grid.GridLayer layer = new Grid.GridLayer(terrainMesh, gridLayerMaterials[0], 
-                                                 gridWidth, gridHeight, gridCellSize, 
-                                                 FilterMode.Point);
+    
+
+    private void InitResourceLayer() {
+        Grid.Resource layer = new Grid.Resource(terrainMesh, gridLayerMaterials[2],
+                                                gridWidth, gridHeight, gridCellSize,
+                                                FilterMode.Bilinear);
         gridLayers.Add(layer);
-        gridLayerMaterials[0] = layer.LayerMaterial;
-        gridLayerMaterials[0].SetFloat("GridSize", gridWidth * gridCellSize);
+        layer.InitLayer();
+        layer.LayerMaterial.SetFloat("GridSize", gridWidth * gridCellSize);
     }
 }
 
