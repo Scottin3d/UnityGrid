@@ -17,30 +17,34 @@ namespace Grid
     /// </summary>
     public abstract class Layer : IGridLayer
     {
-        protected Mesh meshLayer;
-        public Material LayerMaterial => gridLayerMaterial;
-        protected Material gridLayerMaterial;
-        protected Texture2D colorTex;
-        protected Texture2D BRGBWStrip;
-        protected FilterMode gridFilterMode;
-        protected int gridWidth;
-        protected int gridHeight;
-        protected float gridCellSize;
 
-        public Layer(Mesh meshLayer = default, Material gridLayerMaterial = default,
-                      int gridWidth = default, int gridHeight = default, float gridCellSize = 1,
-                      FilterMode gridFilterMode = FilterMode.Bilinear)
+        public Layer()
         {
-            this.meshLayer = meshLayer;
-            this.gridLayerMaterial = gridLayerMaterial;
-            colorTex = new Texture2D(gridWidth, gridHeight);
-            this.gridFilterMode = gridFilterMode;
-            colorTex.filterMode = this.gridFilterMode;
-            BRGBWStrip = Resources.Load("Texture/BRGBWStrip", typeof(Texture2D)) as Texture2D;
-            this.gridWidth = gridWidth;
-            this.gridHeight = gridHeight;
-            this.gridCellSize = gridCellSize;
+            
         }
         public abstract void InitLayer();
     }
+
+    public static class Utils {
+        /// <summary>
+        /// Get the (X, Z) coordinate from a point in world space.
+        /// </summary>
+        /// <param name="position">The world space position.</param>
+        /// <param name="gridSize">The size of the grid.</param>
+        /// <param name="numberOfCells">The number of cells in the grid.</param>
+        /// <returns>A <c>Vector2Int</c> of the grid coordinates.</returns>
+        public static Vector2Int GetXZPosition(Vector3 position, int gridSize, int numberOfCells)
+        {
+            int xPos = Mathf.FloorToInt(position.x / (gridSize / numberOfCells));
+            int zPos = Mathf.FloorToInt(position.z / (gridSize / numberOfCells));
+            return new Vector2Int(xPos, zPos);
+        }
+
+        public static Vector3 GetWorldPositon(Vector2Int gridCoord, int gridSize, int numberOfCells) {
+            return new Vector3(gridCoord.x, 0f, gridCoord.y) * (gridSize / numberOfCells);
+        }
+
+
+    }
+    
 }
