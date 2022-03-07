@@ -3,33 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 using CodeMonkey;
 
-public class MaterialLerp : MonoBehaviour
+public class LayerManager : MonoBehaviour
 {
-    private List<Grid.Layer> gridLayers;
+    private List<Layers.Layer> gridLayers;
     public int layerIndex = 0;
-    public Material material;
-
+    public GameObject terrain;
+    private Material material;
     [Header("Grid Options")]
     [SerializeField] private float numberOfCells;
+    [SerializeField] private int terrainSize;
+    public bool isLayerOn;
 
-    public bool isGridOn;
-    private float gridOpacity = 0;
     // Start is called before the first frame update
     void Start()
     {
-        isGridOn = true;
+        isLayerOn = true;
         numberOfCells = (numberOfCells < 1) ? 1 : numberOfCells;
+        terrainSize = Mathf.FloorToInt(terrain.transform.localScale.x);
+        material = terrain.GetComponent<MeshRenderer>().material;
         material.SetFloat("CellCount", numberOfCells);
 
-        gridLayers = new List<Grid.Layer>();
+        gridLayers = new List<Layers.Layer>();
 
         // basic grid
-        Grid.TerrainGrid terrainGrid = new Grid.TerrainGrid((int)numberOfCells);
+        Layers.TerrainLayer terrainGrid = new Layers.TerrainLayer((int)numberOfCells);
         gridLayers.Add(terrainGrid);
         terrainGrid.InitLayer();
 
 
-        Grid.BuildLayer buildLayer = new Grid.BuildLayer(20f, 100, (int)numberOfCells, FilterMode.Point);
+        Layers.BuildLayer buildLayer = new Layers.BuildLayer(2f, terrainSize, (int)numberOfCells, FilterMode.Point);
         gridLayers.Add(buildLayer);
         buildLayer.InitLayer();
         gridLayers[layerIndex].ApplyLayer(ref material);
@@ -39,8 +41,8 @@ public class MaterialLerp : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            isGridOn = !isGridOn;
-            if (isGridOn)
+            isLayerOn = !isLayerOn;
+            if (isLayerOn)
             {
                 gridLayers[layerIndex].ApplyLayer(ref material);
 
@@ -52,7 +54,7 @@ public class MaterialLerp : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.L))
         {
-            if (isGridOn)
+            if (isLayerOn)
             {
                 layerIndex++;
                 if (layerIndex >= gridLayers.Count)

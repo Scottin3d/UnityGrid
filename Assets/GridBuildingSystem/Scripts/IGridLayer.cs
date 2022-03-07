@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Grid
+namespace Layers
 {
     /// <summary>
     /// Grid Layer interface.
@@ -15,7 +15,7 @@ namespace Grid
     /// <summary>
     /// Grid Layer abstract class.
     /// </summary>
-    public abstract class Layer : IGridLayer
+    public abstract class Layer : MonoBehaviour, IGridLayer
     {
         protected Texture2D layerMap;
         public Texture2D LayerMap => layerMap;
@@ -38,7 +38,6 @@ namespace Grid
 
         }
         public abstract void InitLayer();
-
         public abstract void ApplyLayer(ref Material material);
         public abstract void DisableLayer(ref Material material);
 
@@ -64,6 +63,33 @@ namespace Grid
             return new Vector3(gridCoord.x, 0f, gridCoord.y) * (gridSize / numberOfCells);
         }
 
+        public static Texture2D FlipTexture(Texture2D original, bool upSideDown = true)
+        {
+
+            Texture2D flipped = new Texture2D(original.width, original.height);
+
+            int xN = original.width;
+            int yN = original.height;
+
+
+            for (int i = 0; i < xN; i++)
+            {
+                for (int j = 0; j < yN; j++)
+                {
+                    if (upSideDown)
+                    {
+                        flipped.SetPixel(j, xN - i - 1, original.GetPixel(j, i));
+                    }
+                    else
+                    {
+                        flipped.SetPixel(xN - i - 1, j, original.GetPixel(i, j));
+                    }
+                }
+            }
+            flipped.Apply();
+
+            return flipped;
+        }
 
     }
     

@@ -71,7 +71,7 @@ Material:
     - CellCount: 50
     - DisplacementIntensity: 0.01
     - GridOpacity: 1
-    - LayerOpacity: 0.65
+    - LayerOpacity: 0
     - Vector1_00971646e80c45d08b2419514c5b44f0: 0.3
     - Vector1_1a0559445fb44f2f8d6e233b2e5534d7: 5
     - Vector1_38f4115baef347f785810ccf4ae4fe24: 1
