@@ -23,6 +23,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - LayerMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - LayerMask:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -67,12 +71,13 @@ Material:
     - CellCount: 50
     - DisplacementIntensity: 0.01
     - GridOpacity: 1
+    - LayerOpacity: 0.65
     - Vector1_00971646e80c45d08b2419514c5b44f0: 0.3
     - Vector1_1a0559445fb44f2f8d6e233b2e5534d7: 5
-    - Vector1_38f4115baef347f785810ccf4ae4fe24: 0.988
+    - Vector1_38f4115baef347f785810ccf4ae4fe24: 1
     - Vector1_39a38e7c74694e7fba45699bc9a12176: 1
     - Vector1_c7667fe098f94817941e10a1ac59b644: 50
     m_Colors:
     - Color_e8767c6e4d2e453ab5f8c2f2c67a5684: {r: 0, g: 0, b: 0, a: 0}
-    - GridColor: {r: 0.2758627, g: 0.8113208, b: 0.15690637, a: 0}
+    - GridColor: {r: 0.24677414, g: 0.26415092, b: 0.242969, a: 0}
   m_BuildTextureStacks: []

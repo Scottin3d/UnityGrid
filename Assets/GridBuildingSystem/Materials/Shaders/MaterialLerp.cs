@@ -5,38 +5,66 @@ using CodeMonkey;
 
 public class MaterialLerp : MonoBehaviour
 {
-    public Texture2D colorMap;
-    private Texture2D layerMask;
+    private List<Grid.Layer> gridLayers;
+    public int layerIndex = 0;
     public Material material;
 
     [Header("Grid Options")]
     [SerializeField] private float numberOfCells;
 
-    private bool isGridOn = false;
+    public bool isGridOn;
     private float gridOpacity = 0;
     // Start is called before the first frame update
     void Start()
     {
-        //material = GetComponent<MeshRenderer>().material;
+        isGridOn = true;
         numberOfCells = (numberOfCells < 1) ? 1 : numberOfCells;
         material.SetFloat("CellCount", numberOfCells);
-        colorMap = new Texture2D(Mathf.RoundToInt(numberOfCells), Mathf.RoundToInt(numberOfCells));
-        material.SetTexture("ColorMap", colorMap);
-        layerMask = new Texture2D(Mathf.RoundToInt(numberOfCells), Mathf.RoundToInt(numberOfCells));
-        layerMask.filterMode = FilterMode.Point;
-        InitLayerMask();
-        material.SetTexture("LayerMask", layerMask);
 
+        gridLayers = new List<Grid.Layer>();
+
+        // basic grid
+        Grid.TerrainGrid terrainGrid = new Grid.TerrainGrid((int)numberOfCells);
+        gridLayers.Add(terrainGrid);
+        terrainGrid.InitLayer();
+
+
+        Grid.BuildLayer buildLayer = new Grid.BuildLayer(20f, 100, (int)numberOfCells, FilterMode.Point);
+        gridLayers.Add(buildLayer);
+        buildLayer.InitLayer();
+        gridLayers[layerIndex].ApplyLayer(ref material);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.G)) {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
             isGridOn = !isGridOn;
-            gridOpacity = (isGridOn) ? 1f : 0f;
-            material.SetFloat("GridOpacity", gridOpacity);
+            if (isGridOn)
+            {
+                gridLayers[layerIndex].ApplyLayer(ref material);
+
+            }
+            else
+            {
+                gridLayers[layerIndex].DisableLayer(ref material);
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            if (isGridOn)
+            {
+                layerIndex++;
+                if (layerIndex >= gridLayers.Count)
+                {
+                    layerIndex = 0;
+                }
+                gridLayers[layerIndex].ApplyLayer(ref material);
+
+            }
         }
 
+        /*
         if (Input.GetMouseButtonDown(0)) {
             // get mouse WS position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -53,23 +81,6 @@ public class MaterialLerp : MonoBehaviour
 
             }
         }
-    }
-
-    private void InitLayerMask() {
-        Color[] c = new Color[Mathf.RoundToInt(numberOfCells) * Mathf.RoundToInt(numberOfCells)];
-        for (int i = 0; i < c.Length; i++)
-        {
-            c[i] = Color.black;
-        }
-        layerMask.SetPixels(c);
-        layerMask.Apply();
-    }
-}
-
-public class BuildLayer : Grid.IGridLayer
-{
-    public void InitLayer()
-    {
-        throw new System.NotImplementedException();
+        */
     }
 }
