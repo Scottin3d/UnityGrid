@@ -6,6 +6,9 @@ public class CameraController : MonoBehaviour
 {
     [SerializeField] Vector2 zoomLimits;
     [SerializeField] float cameraSpeed;
+    [SerializeField] float cameraSwiftSpeed;
+    private float camSpeed;
+
     public Transform mainCamera;
     Transform zoomObject;
     Vector2 input;
@@ -17,10 +20,19 @@ public class CameraController : MonoBehaviour
         //mainCamera = Camera.main.transform;
         transform.LookAt(mainCamera);
         zoomObject = transform.GetChild(0);
+        camSpeed = cameraSpeed;
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            camSpeed = cameraSwiftSpeed;
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftShift)) {
+            camSpeed = cameraSpeed;
+        }
         moveInput.Set(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
         if (mouseMove)
         {
@@ -41,7 +53,7 @@ public class CameraController : MonoBehaviour
         movementDirection.y = 0;
         transform.position += movementDirection.normalized * Time.deltaTime * cameraSpeed;
 
-        zoomObject.localPosition += new Vector3(0,0,-Input.mouseScrollDelta.y);
+        zoomObject.localPosition += new Vector3(0,0,-Input.mouseScrollDelta.y) * 10f;
         zoomObject.localPosition = new Vector3(zoomObject.localPosition.x, zoomObject.localPosition.y,Mathf.Clamp(zoomObject.localPosition.z, zoomLimits.x, zoomLimits.y));
 
     }

@@ -1,41 +1,26 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityGrid.Debug;
 
-public class Debugger : MonoBehaviour
+namespace UnityGrid
 {
-    public static Debugger instance;
-    private bool isDebugOn = false;
-    private void Awake()
+    public class Debugger : MonoBehaviour
     {
-        instance = this;
-    }
-
-    private void LateUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha0))
+        public static Debugger instance;
+        public static event Action<bool> OnDebugToggle;
+        private bool isDebugOn = false;
+        private void Awake()
         {
-            var saveables = new List<IDebugger>();
-            isDebugOn = !isDebugOn;
+            instance = this;
+        }
 
-            var rootObjs = SceneManager.GetSceneAt(0).GetRootGameObjects();
-            foreach (var root in rootObjs)
+        private void LateUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                saveables.AddRange(root.GetComponentsInChildren<IDebugger>(true));
-            }
-
-            foreach (var item in saveables)
-            {
-                if (isDebugOn)
-                {
-                    item.DebugOn();
-                }
-                else
-                {
-                    item.DebugOff();
-                }
+                isDebugOn = !isDebugOn;
+                OnDebugToggle?.Invoke(isDebugOn);
             }
         }
     }

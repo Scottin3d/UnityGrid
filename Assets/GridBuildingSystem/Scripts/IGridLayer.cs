@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Layers
+namespace UnityGrid
 {
     /// <summary>
     /// Grid Layer interface.
@@ -21,13 +22,16 @@ namespace Layers
         public Texture2D LayerMap => layerMap;
         protected Texture2D layerMask;
         public Texture2D LayerMask => layerMask;
+        protected int gridSize;
         protected int numberOfCells;
         protected FilterMode filterMode;
         protected float gridOpacity = 0f;
         protected float layerOpacity = 0f;
         protected Color gridColor = Color.green;
-        public Layer(int _numberOfCells, FilterMode _filterMode = FilterMode.Bilinear)
+
+        public Layer(int _gridSize, int _numberOfCells, FilterMode _filterMode = FilterMode.Bilinear)
         {
+            gridSize = (_gridSize < 1) ? 1 : _gridSize;
             numberOfCells = (_numberOfCells < 1) ? 1 : _numberOfCells;
             filterMode = _filterMode;
 
@@ -35,12 +39,11 @@ namespace Layers
             layerMask = new Texture2D(Mathf.RoundToInt(numberOfCells), Mathf.RoundToInt(numberOfCells));
             layerMask.filterMode = filterMode;
             layerMap.filterMode = filterMode;
-
         }
+
         public abstract void InitLayer();
         public abstract void ApplyLayer(ref Material material);
         public abstract void DisableLayer(ref Material material);
-
 
     }
 
