@@ -13,7 +13,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
+
 
 /*
  * Enable Lights when Player enters trigger
@@ -21,7 +21,7 @@ using UnityEngine.Experimental.Rendering.Universal;
 public class EnableLights : MonoBehaviour {
     
     [SerializeField] private CaptureOnTriggerEnter2D enableLightsTrigger = null;
-    [SerializeField] private Light2D[] lightArray = null;
+    [SerializeField] private UnityEngine.Rendering.Universal.Light2D[] lightArray = null;
     [SerializeField] private float targetLightIntensity = 1f;
     [SerializeField] private float lightIntensitySpeed = 1f;
 
@@ -32,7 +32,7 @@ public class EnableLights : MonoBehaviour {
             enableLightsTrigger.OnPlayerTriggerEnter2D += EnableLightsTrigger_OnPlayerTriggerEnter2D;
         }
         
-        foreach (Light2D light in lightArray) {
+        foreach (UnityEngine.Rendering.Universal.Light2D light in lightArray) {
             light.intensity = 0f;
         }
 
@@ -48,7 +48,7 @@ public class EnableLights : MonoBehaviour {
         lightIntensity += lightIntensitySpeed * Time.deltaTime;
         lightIntensity = Mathf.Clamp(lightIntensity, 0f, targetLightIntensity);
 
-        foreach (Light2D light in lightArray) {
+        foreach (UnityEngine.Rendering.Universal.Light2D light in lightArray) {
             light.intensity = lightIntensity;
         }
 

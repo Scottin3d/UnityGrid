@@ -31,8 +31,9 @@ public class GridXZ<TGridObject> {
                 gridArray[x, z] = createGridObject(this, x, z);
             }
         }
+        DrawDebug();
 
-        
+
     }
 
     public void DrawDebug() {
